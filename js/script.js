@@ -62,29 +62,9 @@ define(function () {
         return(currentFilterString)
     };
 
-    function createScriptObjs(qlikGenericObj, app, directDiscoveryCheck, filterPresent, vLimit, join_sql, metricsArray) {
-    directDiscoveryCheck = 'on';
-        if (directDiscoveryCheck == 'on') {
-            vScriptArray.push(qlikGenericObj.LoadDD);
-        } else {
-            // Need to add where clause if filter was created
-            // if (filterPresent == 1) {
-                // slice is to remove the semicolon
-                // let updatedScriptSection = qlikGenericObj.Load.slice(0, -1) + currentFilterString + ';';
-            //     vScriptArray.push(updatedScriptSection);
-            // } else {
-                vScriptArray.push(qlikGenericObj.Load);
-            //};
+    function createScriptObjs(qlikGenericObj, app) {
 
-            // Need to add limit
-            if (vLimit != 0) {
-                // Apply limit to the script section being added now
-                let scriptSection = vScriptArray[vScriptArray.length - 1];
-                // slice is to strip off semicolon
-                let updatedScriptSection = scriptSection.slice(0, -1) + 'LIMIT ' + vLimit + ';';
-                vScriptArray[vScriptArray.length - 1] = updatedScriptSection;
-            }
-        }
+        vScriptArray.push(qlikGenericObj.LoadDD);
 
         vSelectedTableProp.push([
             vcycle, {
@@ -186,7 +166,7 @@ define(function () {
 
     return {
         //Create Table in Script Section
-        createScript: function (selectionObjs, filterObjs, app, directDiscoveryCheck, filterPresent, vLimit, join_sql, dimensionTableArray, metricsArray) {
+        createScript: function (selectionObjs, app, join_sql, dimensionTableArray, metricsArray) {
 
             for (selectionIndex in selectionObjs) {
                 
@@ -286,7 +266,7 @@ define(function () {
                 //         qStringExpression: "=concat(DIMENSION_NAME,', ')"
                 //     }
                 // }, function(qlikGenericObject){
-                createScriptObjs(qlikGenericObj, app, directDiscoveryCheck, filterPresent, vLimit)
+                createScriptObjs(qlikGenericObj, app)
                 // });
             }
         },

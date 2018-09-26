@@ -485,14 +485,19 @@ $.ajax({
                 script.removeScriptEntry(rowId)
             })
 
-            var supportedMeasure = ["SUM", "COUNT", "COUNT_DISTINCT", "MAX", "MIN"]
+            //var supportedMeasure = ["SUM", "COUNT", "COUNT_DISTINCT", "MAX", "MIN"]
             var kylinMeasureHandler = function (measureObj) {
                 var measureDescArray = [];
+                var expression = '',
+                    paramValue = '',
+                    measureName = '',
+                    newExpression = '';
+
                 for(var i=0; i<measureObj.length; i++){
-                    var expression = measureObj[i][1].qText;
-                    var paramValue = measureObj[i][2].qText;
-                    var measureName = measureObj[i][0].qText;
-                    var newExpression = ''
+                    expression = measureObj[i][1].qText;
+                    paramValue = measureObj[i][2].qText;
+                    measureName = measureObj[i][0].qText;
+
                     selectedMeasure = selectedMeasure.map(x=>x.trim());
                     if(selectedMeasure.indexOf(measureName) == -1) {
                         continue;
@@ -599,68 +604,51 @@ $.ajax({
                     addTableButtonClicked = false
                 });
 
+                var fetchParam = [{                    
+                    qTop: 0,                     
+                    qLeft: 0,                     
+                    qWidth: 10,                     
+                    qHeight: 1000                  
+                }]
+
+                // fetch the factTableName array
                 var factTableName = ''
                 var promise0 = new Promise(function(resolve, reject) {
-                    app.getObject(factTableFilterId).then(model => {                                  
-                        console.log(model.layout.qHyperCube.qSize);                                                         
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(factTableFilterId).then(model => {                                                                                        
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             factTableName = data[0].qMatrix[0][5].qText;
                             resolve()
-                            console.log(tableJoinArray)
                         })                
                     });
                 });
             
-                var tableJoinArray = []
-                // get the table content      
+                // fetch the joinTable array
+                var tableJoinArray = []    
                 var promise1 = new Promise(function(resolve, reject) {
-                    app.getObject(joinTableId).then(model => {                                  
-                        console.log(model.layout.qHyperCube.qSize);                                                         
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(joinTableId).then(model => {                                                                                      
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             tableJoinArray = data[0].qMatrix;
                             resolve()
-                            console.log(tableJoinArray)
                         })                
                     });
                 });
                
+                // fetch the joinType array
                 var typeJoinArray = []
                 var promise2 = new Promise(function(resolve, reject) {
-                    app.getObject(joinTypeId).then(model => {                 
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(joinTypeId).then(model => {                                 
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             typeJoinArray = data[0].qMatrix;
                             resolve()
-                            console.log(typeJoinArray)
                         })
                     })                  
                 });
                
+                // fetch the primaryKey array
                 var primaryKeyJoinArray = []
                 var promise3 = new Promise(function(resolve, reject) {
-                    app.getObject(joinPrimaryKeyId).then(model => {                  
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(joinPrimaryKeyId).then(model => {                                 
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             primaryKeyJoinArray = data[0].qMatrix;
                             resolve()
                             console.log(primaryKeyJoinArray)
@@ -668,115 +656,103 @@ $.ajax({
                     })              
                 });
            
+                // fetch the foreignKey array
                 var foreignKeyJoinArray = []
                 var promise4 = new Promise(function(resolve, reject) {
-                    app.getObject(joinForeignKeyId).then(model => {                  
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(joinForeignKeyId).then(model => {                                  
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             foreignKeyJoinArray = data[0].qMatrix;
                             resolve()
-                            console.log(foreignKeyJoinArray)
                         })  
                     })              
                 });
 
+                // fetch the dimensionTable array
                 var promise5 = new Promise(function(resolve, reject) {
-                    app.getObject(dimensionTableId).then(model => {                  
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(dimensionTableId).then(model => {                                
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             dimensionTableArray = data[0].qMatrix;
                             resolve()
-                            console.log(dimensionTableArray)
                         })  
                     })              
                 });
 
+                // fetch the measureTable array
                 var promise6 = new Promise(function(resolve, reject) {
-                    app.getObject(measureTableId).then(model => {                  
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
-                            //measureTableArray = data[0].qMatrix;
+                    app.getObject(measureTableId).then(model => {                                  
+                        model.getHyperCubeData('/qHyperCubeDef', ).then((data) => {
                             measureTableArray = kylinMeasureHandler(data[0].qMatrix)
                             resolve()
-                            console.log(measureTableArray)
                         })  
                     })              
                 });
 
+                // fetch the metrics array
                 var promise7 = new Promise(function(resolve, reject) {
-                    app.getObject(metricsTableId).then(model => {                  
-                        console.log(model.layout.qHyperCube.qSize);                 
-                        model.getHyperCubeData('/qHyperCubeDef', [{                    
-                            qTop: 0,                     
-                            qLeft: 0,                     
-                            qWidth: 10,                     
-                            qHeight: 1000                  
-                        }]).then((data) => {
+                    app.getObject(metricsTableId).then(model => {                                 
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             metricsArray = data[0].qMatrix
                             resolve()
-                            console.log(metricsArray)
                         })  
                     })              
                 });
 
                 Promise.all([promise0, promise1, promise2, promise3, promise4, promise5, promise6, promise7]).then(function() {
-                    var join_length = typeJoinArray.length;
+                    
+                    var joinKey = '';
+                    var table_verbose_name = '';
+                    var table_origin_name = '';
+                    var sql_join_table_part = '';
+                    var sql_join_key_part = '';
+                    var primaryKey = '';
+                    var foreignKey = '';
+                    var primaryKey_Length = 0,
+                        tableKey_length = 0;
+
                     join_sql = `FROM ${factTableName}` + '\n';
-                    if(join_length !== 0) {
-                        for (let i = 0; i < join_length; i++) {
-                            var joinKey = typeJoinArray[i][0].qText;
-                            var tableKey_length = tableJoinArray.length;
-                            var table_verbose_name = '';
-                            var table_origin_name = '';
-                            var join_sql_1 = '';
+                    if(typeJoinArray.length !== 0) {
+                        for (let i = 0; i < typeJoinArray.length; i++) {
+                            joinKey = typeJoinArray[i][0].qText;
+
+                            // join table clause part
+                            tableKey_length = tableJoinArray.length;
                             for (let q=0; q < tableKey_length; q++) {
                                 if(tableJoinArray[q][2].qText == joinKey) {
-                                    //join_sql_1 = ` ${typeJoinArray[q][2].qText} JOIN  ${tableJoinArray[q][1].qText}  AS ${tableJoinArray[q][0].qText}` + '\n';
-                                    join_sql_1 = ` JOIN  ${tableJoinArray[q][1].qText}` + '\n';
+                                    // direct query do not support join as
+                                    sql_join_table_part = ` JOIN  ${tableJoinArray[q][1].qText}` + '\n';
                                     table_verbose_name = tableJoinArray[q][0].qText;
                                     table_origin_name = tableJoinArray[q][1].qText;
                                 }
                             }
-                            var join_sql_2 = '';
-                            var primaryKey_Length = primaryKeyJoinArray.length
+
+                            // join primaryKey and foreignKey clause part
+                            primaryKey_Length = primaryKeyJoinArray.length
                             for (let j = 0; j < primaryKey_Length; j++){
+                                // add primaryKey
                                 if(primaryKeyJoinArray[j][0].qText == joinKey){
-                                    var reg_str = table_verbose_name
-                                    var re = new RegExp(reg_str, "g");
-                                    var primaryKey = primaryKeyJoinArray[j][1].qText.replace(re, table_origin_name)
-                                    if (join_sql_2.length !== 0) {
-                                        join_sql_2 = join_sql_2.slice(0, -2);
-                                        join_sql_2 += ` AND ${primaryKey}`;
+
+                                    //replace table verbose name with origin name (no join as)
+                                    var re = new RegExp(table_verbose_name, "g");
+                                    primaryKey = primaryKeyJoinArray[j][1].qText.replace(re, table_origin_name)
+
+                                    if (sql_join_key_part.length !== 0) {
+                                        sql_join_key_part = sql_join_key_part.slice(0, -2);
+                                        sql_join_key_part += ` AND ${primaryKey}`;
                                     }else{
-                                        join_sql_2 = ` ON (${primaryKey}`;
+                                        sql_join_key_part = ` ON (${primaryKey}`;
                                     }
                                 }
+                                // add foreignKey
                                 if(foreignKeyJoinArray[j][0].qText == joinKey){
-                                    var foreignKey = foreignKeyJoinArray[j][1].qText.replace(re, table_origin_name)
-                                    join_sql_2 += ' = '  + foreignKey + ')\n'
+                                    foreignKey = foreignKeyJoinArray[j][1].qText.replace(re, table_origin_name)
+                                    sql_join_key_part += ' = '  + foreignKey + ')\n'
                                 }
                             }
-                            join_sql =join_sql + join_sql_1 + join_sql_2;
-                            console.log(join_sql_1);
-                            console.log(join_sql_2);
+                            join_sql = join_sql + sql_join_table_part + sql_join_key_part;
                         }
                     }
-                    console.log(join_sql)
+
+                    //clear app data after all promises resolved
                     currentDbs = []
                     currentTables = []
                     currentDim = []
@@ -790,8 +766,7 @@ $.ajax({
             $('#CreateScript').on('click', function () {
                 $('#myTab a[href="#Script"]').tab('show');
                 $('.progress-bar').css('width', '65%');
-                var filterObjs = filters.extractFiltersFromHTML()
-                script.createScript(selectionObjs, filterObjs, app, directDiscoveryCheck, filterPresent, vLimit, join_sql, dimensionTableArray, metricsArray);
+                script.createScript(selectionObjs, app, join_sql, dimensionTableArray, metricsArray);
             });
 
 
@@ -902,29 +877,6 @@ $.ajax({
                     $(this).parent().children('ul.tree').toggle(200);
                 });
 
-                // $('.tree-leaf').on('click', function (element) {
-                //     if ($(this).hasClass('active-tree-leaf')) {
-                //         // item already selected so unselect and remove
-                //         $(this).removeClass('active-tree-leaf')
-                //         let index = summaryTableCols.indexOf($(this).text())
-                //         summaryTableCols.splice(index, 1)
-                //     }
-                //     else {
-                //         // item is not selected so select and add
-                //         $(this).addClass('active-tree-leaf')
-                //         //summaryTableCols.push($(this).text())
-                //     }
-                //     app.clearAll().then(function(){
-                //         app.field('table_name').selectValues(["accounttype"]).then(function(){
-                //             app.visualization.create('table', summaryTableCols).then(function (chart) {
-                //                 // parameter is the id of html element to show in
-                //                 chart.show('QVINFO');
-                //                 qlik.resize();
-                //             });
-                //         })
-                //     });
-                // });
-
                 summaryTableCols.push('table_name')
                 summaryTableCols.push('#Rows')
                 summaryTableCols.push('Size')
@@ -1034,43 +986,6 @@ $.ajax({
                     }
                 });
 
-            
-
-                // app.visualization.create('barchart',
-                //     [
-                //         {
-                //             qDef: {
-                //                 qFieldDefs: ["=ValueList('Data-Sources','Tables','Columns','Dimensions','Measures')"],
-                //                 "qFieldLabels": ["Selection"],
-                //                 "qSortCriterias": [
-                //                     { "qSortByLoadOrder": 1 }
-                //                 ]
-                //             },
-                //         },
-                //         {
-                //             qDef: {
-                //                 qDef: "=pick(rowno()," + a + "," + b + "," + c + "," + e + "," + f + ")",
-                //                 qLabel: "Amount"
-                //             }
-                //         }
-                //     ],
-                //     {
-                //         "showTitles": false,
-                //         "dimensionAxis": {
-                //             "show": "labels",
-                //             "dock": "far"
-                //         },
-                //         "measureAxis": {
-                //             "show": "labels"
-                //         },
-                //         "orientation": "horizontal",
-                //         "dataPoint": { "showLabels": true },
-                //         "color": {
-                //             "auto": false,
-                //             "mode": "byExpression"
-                //         }
-                //     }
-
             });
 
             //Create App
@@ -1109,9 +1024,9 @@ $.ajax({
                                 localsettings += "SET MoneyThousandSep=',';\n";
                                 localsettings += "SET MoneyDecimalSep='.';\n";
                                 localsettings += "SET MoneyFormat='#.##0,00 €;-#.##0,00 €';\n";
-                                localsettings += "SET TimeFormat='hh:mm:ss';\n";
-                                localsettings += "SET DateFormat='DD.MM.YYYY';\n";
-                                localsettings += "SET TimestampFormat='DD.MM.YYYY hh:mm:ss[.fff]';\n";
+                                localsettings += "SET TimeFormat='h:mm:ss';\n";
+                                localsettings += "SET DateFormat='YYYY-MM-DD';\n";
+                                localsettings += "SET TimestampFormat='YYYY-MM-DD h:mm:ss[.fff]';\n";
                                 localsettings += "SET MonthNames='Jan;Feb;Mrz;Apr;Mai;Jun;Jul;Aug;Sep;Okt;Nov;Dez';\n";
                                 localsettings += "SET DayNames='Mo;Di;Mi;Do;Fr;Sa;So';\n";
                                 localsettings += "SET LongMonthNames='Januar;Februar;März;April;Mai;Juni;Juli;August;September;Oktober;November;Dezember';\n";
