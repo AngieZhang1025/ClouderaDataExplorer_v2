@@ -50,13 +50,13 @@ $.ajax({
     });
 
     require([
-        "js/qlik",
-        "jquery",
-        applicationfolder + "/js/bootstrap.min",
-        applicationfolder + "/js/bootstrap-select",
-        applicationfolder + "/js/bootstrap-notify.min",
-        applicationfolder + "/js/jquery.cookie",
-        applicationfolder + "/js/bootstrap-switch.min"
+        "../js/qlik",
+        "/js/jquery",
+        "/js/bootstrap.min",
+        "/js/bootstrap-select.min",
+        "/js/bootstrap-notify.min",
+        "/js/jquery.cookie",
+        "/js/bootstrap-switch.min"
     ],
 
     function (qlik, $, selectpicker) {

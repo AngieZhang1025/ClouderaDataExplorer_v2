@@ -40,7 +40,7 @@ $.ajax({
 
     var config = {
         host: window.location.hostname,
-        prefix: "/ticket/",
+        prefix: "/",
         port: window.location.port,
         isSecure: window.location.protocol === "https:"
     };
@@ -80,16 +80,29 @@ $.ajax({
             var filterPresent = 0;   // flag for if filter present
 
             // IDs
-            var databaseFilterId = 'mSxnNj'
-            var tableFilterId = 'aExEHJ'
-            var columnFilterId = 'UyxsShT'
-            var tagFilterId = 'EaevuCA'
+            var databaseFilterId = 'UVKGQX';            
+            var tableFilterId = 'pnbM';
+            var columnFilterId = 'eeGjFtQ';
+            var measureFilterId = 'fDSmB';
+            var tagFilterId = 'EaevuCA';
+
+            var joinTableId = 'raxmN';            
+	        var joinPrimaryKeyId = 'hkXuXWP';            
+	        var joinForeignKeyId = 'WzhQcK';            
+	        var joinTypeId = 'psnh';            
+            var factTableFilterId = 'abTYSWd';
+            var dimensionTableId = 'XRrcs';
+            var measureTableId = 'uRdSQa'
 
             // record user selections
             var currentDbs = []
             var currentTables = []
-            var currentCols = []
+            var currentDim = []
+	        var currentMes = []
             var selectionObjs = []
+            var join_sql = ""
+            var dimensionTableArray = []
+            var measureTableArray = []
             // Current selections
             var summaryTableCols = []
             var detailTableCols = []
@@ -164,7 +177,7 @@ $.ajax({
             app.getObject('QV01', databaseFilterId);
             app.getObject('QV02', tableFilterId);
             app.getObject('QV03', columnFilterId);
-            app.getObject('QV04', 'PbWqLs');
+            app.getObject('QV04', measureFilterId );
             app.getObject('QV05', 'bdjLf');
             app.getObject('QV06', 'ybWmTHe');
             app.getObject('QV07', 'qBZDR');
@@ -405,10 +418,11 @@ $.ajax({
                 //console.log(this.parent());
                 app.getList('SelectionObject', function (selectionObj) {
                     console.log('should now have selection obj')
-                    var currentSelections = selections.updateCurrentSelections(selectionObj, currentDbs, currentTables, currentCols)
+                    var currentSelections = selections.updateCurrentSelections(selectionObj, currentDbs, currentTables, currentDim, currentMes)
                     currentDbs = currentSelections[0]
                     currentTables = currentSelections[1]
-                    currentCols = currentSelections[2]
+                    currentDim = currentSelections[2]
+		            currentMes = currentSelections[3]
                 });
             })
 
@@ -468,6 +482,61 @@ $.ajax({
                 script.removeScriptEntry(rowId)
             })
 
+            var supportedMeasure = ["SUM", "COUNT", "COUNT_DISTINCT", "MAX", "MIN"]
+            var kylinMeasureHandler = function (measureObj) {
+                var measureDescArray = [];
+                for(var i=0; i<measureObj.length; i++){
+                    var expression = measureObj[i][1].qText;
+                    var paramValue = measureObj[i][2].qText.split('.')[1];
+                    var measureName = measureObj[i][0].qText;
+                    //var returnParamValue = measureObj.returnParamValue;
+                    var newExpression = ''
+                    // if(expression in supportedMeasure) {
+                    //     continue;
+                    // }
+                    switch (expression) {
+                        case "SUM": 
+                            newExpression = `=SUM(${paramValue})`
+                            break;
+                        case "COUNT": 
+                            newExpression = `=COUNT(${paramValue})`
+                            break;   
+                        case "COUNT_DISTINCT": 
+                            newExpression = `=Count(DISTINCT ${paramValue})`
+                            break;   
+                        case "MAX": 
+                            newExpression = `=MAX(${paramValue})`
+                            break;  
+                        case "MIN": 
+                            newExpression = `=MIN(${paramValue})`
+                            break;  
+                        // case "TOP_N": 
+                        //     newExpression = `TOP ${returnParamValue} (${paramValue})`
+                        //     break;      
+                        // case "PERCENTILE_APPROX": 
+                        //     newExpression = `PERCENTILE(${paramValue})`
+                        //     break;     
+    
+                    }
+    
+                    measureDescArray.push({      
+                        "qInfo": {
+                            "qId": measureName,
+                            "qType": "measure"
+                        },
+                        "qMeasure": {
+                            "qLabel": measureName,
+                            "qDef": newExpression
+                        },
+                        "qMetaDef": {
+                            "title": measureName
+                          }
+                    })
+                }
+                
+                return measureDescArray;
+            }
+
             // Create Objects to store scripts
             $('#AddScriptEntry').on('click', function () {
                 console.log('Adding script entry...')
@@ -479,24 +548,34 @@ $.ajax({
                 // Need to get actual names if this happens
                 //currentCols = selections.checkColumnNamesExist(currentCols, app)
                 app.createGenericObject({
-                    colsConcat: {
-                        qStringExpression: "=$(vColConcat)"
-                    }
+                    dimsConcat: {
+                        qStringExpression: "=$(vDimConcat)"
+                    },
+                    mesConcat: {
+                        qStringExpression: "=$(vMesConcat)"
+                    },                    
                 }, function(colsConcatObj){
                     if(addTableButtonClicked){
-                        if(currentCols.length == 1 && currentCols[0].includes("of")){                        
-                            var colsArray = colsConcatObj.colsConcat.split("|")
-                            //var currentSelections = selections.updateCurrentSelections(selectionObj, currentDbs, currentTables, currentCols)
-                            currentCols = colsArray.slice(0, colsArray.length - 1)
+                        if(currentDim.length == 1 && currentDim[0].includes("of")){                        
+                            var dimsArray = colsConcatObj.dimsConcat.split("|")
+                            //var currentSelections = selections.updateCurrentSelections(selectionObjs, currentDbs, currentTables, currentDim, currentMes)
+                            currentDim = dimsArray.slice(0, dimsArray.length - 1)
+                        }
+
+                        if(currentMes.length == 1 && currentMes[0].includes("of")){                        
+                            var mesArray = colsConcatObj.mesConcat.split("|")
+                            //var currentSelections = selections.updateCurrentSelections(selectionObjs, currentDbs, currentTables, currentDim, currentMes)
+                            currentMes = mesArray.slice(0, mesArray.length - 1)
                         }
 
                         // Don't add unless selection is correctly defined
-                        if (currentDbs.length != 0 && currentTables != 0 && currentCols != 0) {
+                        if (currentDbs.length != 0 && currentTables != 0) {
                             // Store selections for later
                             selectionObjs.push({
                                 currentDbs: currentDbs,
                                 currentTables: currentTables,
-                                currentCols: currentCols
+                                currentDim: currentDim,
+				                currentMes: currentMes
                             })
 
                             // Add the latest selecctions to the dom
@@ -504,11 +583,6 @@ $.ajax({
 
                             // Update Filter Selction Options to Inlcude new selections
                             sourceFieldOptions = filters.updateFilterSourceOptions(selectionObjs, sourceFieldOptions)
-
-                            currentDbs = []
-                            currentTables = []
-                            currentCols = []
-                            app.clearAll();
                         
                         }
                         // Either the database, table or column selection is empty
@@ -519,6 +593,175 @@ $.ajax({
                     }
                     addTableButtonClicked = false
                 });
+
+                var factTableName = ''
+                var promise0 = new Promise(function(resolve, reject) {
+                    app.getObject(factTableFilterId).then(model => {                                  
+                        console.log(model.layout.qHyperCube.qSize);                                                         
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            factTableName = data[0].qMatrix[0][5].qText;
+                            resolve()
+                            console.log(tableJoinArray)
+                        })                
+                    });
+                });
+            
+                var tableJoinArray = []
+                // get the table content      
+                var promise1 = new Promise(function(resolve, reject) {
+                    app.getObject(joinTableId).then(model => {                                  
+                        console.log(model.layout.qHyperCube.qSize);                                                         
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            tableJoinArray = data[0].qMatrix;
+                            resolve()
+                            console.log(tableJoinArray)
+                        })                
+                    });
+                });
+               
+                var typeJoinArray = []
+                var promise2 = new Promise(function(resolve, reject) {
+                    app.getObject(joinTypeId).then(model => {                 
+                        console.log(model.layout.qHyperCube.qSize);                 
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            typeJoinArray = data[0].qMatrix;
+                            resolve()
+                            console.log(typeJoinArray)
+                        })
+                    })                  
+                });
+               
+                var primaryKeyJoinArray = []
+                var promise3 = new Promise(function(resolve, reject) {
+                    app.getObject(joinPrimaryKeyId).then(model => {                  
+                        console.log(model.layout.qHyperCube.qSize);                 
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            primaryKeyJoinArray = data[0].qMatrix;
+                            resolve()
+                            console.log(primaryKeyJoinArray)
+                        })  
+                    })              
+                });
+           
+                var foreignKeyJoinArray = []
+                var promise4 = new Promise(function(resolve, reject) {
+                    app.getObject(joinForeignKeyId).then(model => {                  
+                        console.log(model.layout.qHyperCube.qSize);                 
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            foreignKeyJoinArray = data[0].qMatrix;
+                            resolve()
+                            console.log(foreignKeyJoinArray)
+                        })  
+                    })              
+                });
+
+                var promise5 = new Promise(function(resolve, reject) {
+                    app.getObject(dimensionTableId).then(model => {                  
+                        console.log(model.layout.qHyperCube.qSize);                 
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            dimensionTableArray = data[0].qMatrix;
+                            resolve()
+                            console.log(dimensionTableArray)
+                        })  
+                    })              
+                });
+
+                var promise6 = new Promise(function(resolve, reject) {
+                    app.getObject(measureTableId).then(model => {                  
+                        console.log(model.layout.qHyperCube.qSize);                 
+                        model.getHyperCubeData('/qHyperCubeDef', [{                    
+                            qTop: 0,                     
+                            qLeft: 0,                     
+                            qWidth: 10,                     
+                            qHeight: 1000                  
+                        }]).then((data) => {
+                            //measureTableArray = data[0].qMatrix;
+                            measureTableArray = kylinMeasureHandler(data[0].qMatrix)
+                            resolve()
+                            console.log(measureTableArray)
+                        })  
+                    })              
+                });
+
+                Promise.all([promise0, promise1, promise2, promise3, promise4, promise5, promise6]).then(function() {
+                    var join_length = typeJoinArray.length;
+                    join_sql = `FROM ${factTableName}` + '\n';
+                    if(join_length !== 0) {
+                        for (let i = 0; i < join_length; i++) {
+                            var joinKey = typeJoinArray[i][0].qText;
+                            var tableKey_length = tableJoinArray.length;
+                            var table_verbose_name = '';
+                            var table_origin_name = '';
+                            var join_sql_1 = '';
+                            for (let q=0; q < tableKey_length; q++) {
+                                if(tableJoinArray[q][2].qText == joinKey) {
+                                    //join_sql_1 = ` ${typeJoinArray[q][2].qText} JOIN  ${tableJoinArray[q][1].qText}  AS ${tableJoinArray[q][0].qText}` + '\n';
+                                    join_sql_1 = ` JOIN  ${tableJoinArray[q][1].qText}` + '\n';
+                                    table_verbose_name = tableJoinArray[q][0].qText;
+                                    table_origin_name = tableJoinArray[q][1].qText;
+                                }
+                            }
+                            var join_sql_2 = '';
+                            var primaryKey_Length = primaryKeyJoinArray.length
+                            for (let j = 0; j < primaryKey_Length; j++){
+                                if(primaryKeyJoinArray[j][0].qText == joinKey){
+                                    var reg_str = table_verbose_name
+                                    var re = new RegExp(reg_str, "g");
+                                    var primaryKey = primaryKeyJoinArray[j][1].qText.replace(re, table_origin_name)
+                                    if (join_sql_2.length !== 0) {
+                                        join_sql_2 = join_sql_2.slice(0, -2);
+                                        join_sql_2 += ` AND ${primaryKey}`;
+                                    }else{
+                                        join_sql_2 = ` ON (${primaryKey}`;
+                                    }
+                                }
+                                if(foreignKeyJoinArray[j][0].qText == joinKey){
+                                    var foreignKey = foreignKeyJoinArray[j][1].qText.replace(re, table_origin_name)
+                                    join_sql_2 += ' = '  + foreignKey + ')\n'
+                                }
+                            }
+                            join_sql =join_sql + join_sql_1 + join_sql_2;
+                            console.log(join_sql_1);
+                            console.log(join_sql_2);
+                        }
+                    }
+                    console.log(join_sql)
+                    currentDbs = []
+                    currentTables = []
+                    currentDim = []
+                    currentMes = []
+                    app.clearAll();
+                })
             });
 
             // Start of handlers for section 3 (Script)
@@ -527,7 +770,7 @@ $.ajax({
                 $('#myTab a[href="#Script"]').tab('show');
                 $('.progress-bar').css('width', '65%');
                 var filterObjs = filters.extractFiltersFromHTML()
-                script.createScript(selectionObjs, filterObjs, app, directDiscoveryCheck, filterPresent, vLimit);
+                script.createScript(selectionObjs, filterObjs, app, directDiscoveryCheck, filterPresent, vLimit, join_sql, dimensionTableArray);
             });
 
 
@@ -536,23 +779,6 @@ $.ajax({
 
                 // Remove the script so that it can be appended next time
                 $('#Scripttable').empty()
-
-                // directDiscoveryCheck = 'off';
-                // filterPresent = 0;
-
-                // Hide Filters
-                // $('#Filterbody').hide();
-                // $(".filter-source-fields").html("");
-                // $(".filter-col-fields").html("");
-                // $("#filter-row-1").siblings().remove();
-                //newFilterRow = '';
-                // sourceFieldOptions = '';
-                // colFieldOptions = '';
-
-                // Reset direct discovery
-                // $('input[name="DDCheck"]').bootstrapSwitch('state', false);
-                // app.clearAll();
-                // app.variable.setStringValue('vLimit', '0');
 
                 // Move progress back a step
                 $('#myTab a[href="#Table"]').tab('show');
@@ -879,6 +1105,18 @@ $.ajax({
                                 new_app.setScript(localsettings + finalScript)
                                 $.notify({ icon: 'glyphicon glyphicon-ok', message: 'LoadScript appended successfully.' }, { type: 'success', placement: { from: 'bottom', align: 'right' } });
                                 notify = $.notify({ icon: 'glyphicon glyphicon-refresh glyphicon-refresh-animate', message: 'Indexing application...<br><div id="progress"></div><div id="progressstatus"></div>' }, { type: 'info', timer: '1000000', placement: { from: 'bottom', align: 'right' } });
+
+                                if(measureTableArray.length!==0) {
+                                    for(var i=0; i<measureTableArray.length;i++) {
+                                        new_app.createMeasure(measureTableArray[i]).then(function(reply) { 
+                                            $.notify({ icon: 'glyphicon glyphicon-ok', message: 'measure pre-create successfully.' }, { type: 'success', placement: { from: 'bottom', align: 'right' } });  
+                                            console.log(reply);                                  
+                                        }, function(error) {  
+                                            console.log("error: " + error.stack);
+                                        }); 
+                                    }
+                                }
+                                
                                 console.log('Reload:');
                                 return new_app.doReload();
                             }).then(function () {

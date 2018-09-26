@@ -31,76 +31,102 @@ define(function () {
             </div>`)
             // Add button each time to allow deletion
             $('#columns-' + selectionIndex).append(`<button type="button" class="close remove-row" aria-label="Close"><span aria-hidden="true">&times;</span></button>`)
-            if(selection.currentCols.length < 3){                
-                for (colIndex in selection.currentCols) {
-                    if(colIndex == selection.currentCols.length - 1){
+            if(selection.currentDim.length < 3){                
+                for (colIndex in selection.currentDim) {
+                    if(colIndex == selection.currentDim.length - 1){
                         // Reached the end of the list
-                        $('#columns-' + selectionIndex).append(selection.currentCols[colIndex].trim())
+                        $('#columns-' + selectionIndex).append(selection.currentDim[colIndex].trim())
                     }
                     else{
-                        $('#columns-' + selectionIndex).append(selection.currentCols[colIndex].trim() + ", ")
+                        $('#columns-' + selectionIndex).append(selection.currentDim[colIndex].trim() + ", ")
                     }
                 }
             }
             else{
-                $('#columns-' + selectionIndex).append(selection.currentCols[0] + " ... " + selection.currentCols[selection.currentCols.length - 1])
-                // for (colIndex in selection.currentCols) {
-                //     $('#columns-' + selectionIndex).append("<p>" + selection.currentCols[colIndex] + "</p>")
+                $('#columns-' + selectionIndex).append(selection.currentDim[0] + " ... " + selection.currentDim[selection.currentDim.length - 1])
+                // for (colIndex in selection.currentDim) {
+                //     $('#columns-' + selectionIndex).append("<p>" + selection.currentDim[colIndex] + "</p>")
+                // }
+            }
+
+	$('#measure-selected').append(`
+            <div id='measure-div-${selectionIndex}' class='selection-row selections-container-column'>
+                <p id='measure-${selectionIndex}'>
+                </p>
+            </div>`)
+            // Add button each time to allow deletion
+            $('#measure-' + selectionIndex).append(`<button type="button" class="close remove-row" aria-label="Close"><span aria-hidden="true">&times;</span></button>`)
+            if(selection.currentMes.length < 3){                
+                for (colIndex in selection.currentMes) {
+                    if(colIndex == selection.currentMes.length - 1){
+                        // Reached the end of the list
+                        $('#measure-' + selectionIndex).append(selection.currentMes[colIndex].trim())
+                    }
+                    else{
+                        $('#measure-' + selectionIndex).append(selection.currentMes[colIndex].trim() + ", ")
+                    }
+                }
+            }
+            else{
+                $('#measure-' + selectionIndex).append(selection.currentMes[0] + " ... " + selection.currentMes[selection.currentMes.length - 1])
+                // for (colIndex in selection.currentMes) {
+                //     $('#measure-' + selectionIndex).append("<p>" + selection.currentMes[colIndex] + "</p>")
                 // }
             }
         }
     }
 
     return {
-        checkColumnNamesExist: function(currentCols, app){
-            if(currentCols.length == 1 && currentCols[0].includes("of")){
+        checkColumnNamesExist: function(currentDim, app){
+            if(currentDim.length == 1 && currentDim[0].includes("of")){
                 app.getList('SelectionObject', function (selectionObj) {
                     console.log(selectionObj)
-                    var currentSelections = selections.updateCurrentSelections(selectionObj, currentDbs, currentTables, currentCols)
+                    var currentSelections = selections.updateCurrentSelections(selectionObj, currentDbs, currentTables, currentDim, currentMes)
                     currentDbs = currentSelections[0]
                     currentTables = currentSelections[1]
-                    currentCols = currentSelections[2]
+                    currentDim = currentSelections[2]
+		            currentMes = currentSelections[3]
                 });
                 
             }
-            return(currentCols)
+            return(currentDim)
         },
-        updateCurrentSelections: function (selectionObj, currentDbs, currentTables, currentCols) {
-            // loop through each table
-            for (var fieldIndex in selectionObj.qSelectionObject.qSelections) {
-                // get the current table object
-                fieldObj = selectionObj.qSelectionObject.qSelections[fieldIndex]
-                selectedArray = fieldObj.qSelected.split(',')
-                if (fieldObj.qField === "db_name") {
-                    currentDbs = selectedArray
-                }
-                if (fieldObj.qField === "table_name") {
-                    currentTables = selectedArray
-                }
-                if (fieldObj.qField === "Column") {
-                    currentCols = selectedArray
-                }
-                if (fieldObj.qField === "table_name" && fieldObj.qSelectedCount > 1) {
-                    console.log('Too many tables. In order to maintain associations please add tables one at a time')
-                    $("#column-section").css("display", "none")
-                    $("#too-many-tables").css("display", "block")
-                }
-                else if (fieldObj.qField === "db_name" && fieldObj.qSelectedCount > 1) {
-                    console.log('Too many tables. In order to maintain associations please add tables one at a time')
-                    $("#column-section").css("display", "none")
-                    $("#table-section").css("display", "none")
-                    $("#too-many-dbs").css("display", "block")
-                }
-                else {
-                    $("#column-section").css("display", "block")
-                    $("#table-section").css("display", "block")
-                    $("#too-many-tables").css("display", "none")
-                    $("#too-many-dbs").css("display", "none")
-                }
-            }
-            return [currentDbs, currentTables, currentCols]
-        },
-
+	updateCurrentSelections: function (selectionObj, currentDbs, currentTables, currentDim, currentMes ) {
+        	// loop through each table            
+	for (var fieldIndex in selectionObj.qSelectionObject.qSelections) {                
+		// get the current table object                
+		fieldObj = selectionObj.qSelectionObject.qSelections[fieldIndex]                
+		selectedArray = fieldObj.qSelected.split(',')               
+		if (fieldObj.qField === "project") {                    
+			currentDbs = selectedArray                
+		}                
+		if (fieldObj.qField === "cube_name") {                    
+			currentTables = selectedArray                
+		}                
+		if (fieldObj.qField === "dimension") {                    
+			currentDim = selectedArray                
+		}                
+		if (fieldObj.qField === "measure") {                    
+			currentMes = selectedArray                
+		}                
+		if (fieldObj.qField === "cube" && fieldObj.qSelectedCount > 1) {                    
+			console.log('Too many tables. In order to maintain associations please add tables one at a time')                    
+			$("#column-section").css("display", "none")                    
+			$("#too-many-tables").css("display", "block")                
+		}else if (fieldObj.qField === "project_name" && fieldObj.qSelectedCount > 1) {                   
+			console.log('Too many tables. In order to maintain associations please add tables one at a time')                    
+			$("#column-section").css("display", "none")                    
+			$("#table-section").css("display", "none")                    
+			$("#too-many-dbs").css("display", "block")                
+		}  else {                    
+			$("#column-section").css("display", "block")                    
+			$("#table-section").css("display", "block")                    
+			$("#too-many-tables").css("display", "none")                    
+			$("#too-many-dbs").css("display", "none")                
+		}           
+ 	}           
+	return [currentDbs, currentTables, currentDim, currentMes]        
+	},
         recreateSelectionRows: function(selectionObjs) {
             recreateSelectionRows(selectionObjs)
         },

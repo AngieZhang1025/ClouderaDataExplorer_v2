@@ -171,7 +171,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <!-- <div id="DDcontainer" class="col-xs-12" style="margin-top: 20px;">
                                 <div style="margin-bottom: 20px;">
                                     <div class="ddbody" style="background: #FFFFFF;">
@@ -198,7 +197,7 @@
                                         <span id="RowAmount"></span>
                                     </div>
                                     <div class="col-xs-12 selbody flex-container">
-                                        <div class="col-xs-4 selection-box" style="padding: 0px" id="database-section">
+                                        <div class="col-xs-3 selection-box" style="padding: 0px" id="database-section">
                                             <div class="outer-container">
                                                 <div class="select-container" id="select-container-database">
                                                     <span class="glyphicon glyphicon-hdd custom-icon"></span>
@@ -233,7 +232,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xs-4 selection-box" style="padding: 0px" id="table-section">
+                                        <div class="col-xs-3 selection-box" style="padding: 0px" id="table-section">
                                             <div class="outer-container">
                                                 <div class='select-container' id='select-container-table'>
                                                     <span class="glyphicon glyphicon-align-justify custom-icon"></span>
@@ -298,7 +297,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-xs-4 selection-box" style="padding: 0px" id="column-section">
+                                        <div class="col-xs-3 selection-box" style="padding: 0px" id="column-section">
                                             <div class="outer-container">
                                                 <div class='select-container' id='select-container-column'>
                                                     <span class="glyphicon glyphicon-list custom-icon"></span>
@@ -318,7 +317,7 @@
                                                                 </div> -->
                                                                 <div class="btn-group btn-group-cols" role="group" aria-label="Basic example">
                                                                     <button type="button" class="btn btn-light btn-light-cols remove-selections" id="remove-selections-cols">Remove All</button>
-                                                                    <button type="button" id="add-all-possible-btn" class="btn btn-light btn-light-cols">Add Possible</button>
+                                                                    <!-- <button type="button" id="add-all-possible-btn" class="btn btn-light btn-light-cols">Add Possible</button> -->
                                                                       <!-- Trigger the modal with a button -->
                                                                       <button id="modalbutton1" type="button" class="btn btn-light btn-light-cols remove-selections" data-toggle="modal" data-target="#myModal">
                                                                             <span><img src="https://findicons.com/files/icons/1676/primo/128/chart_bar.png" height="15px">View</span>
@@ -363,6 +362,77 @@
                                                     </div> -->
                                                     <!-- <h4 class="selected-title">Column Selections</h4> -->
                                                     <div id="columns-selected">
+                                                        <!-- column selections will dynamically be added here -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-xs-3 selection-box" style="padding: 0px" id="measure-section">
+                                            <div class="outer-container">
+                                                <div class='select-container' id='select-container-column'>
+                                                    <span class="glyphicon glyphicon-list custom-icon"></span>
+                                                    <p class="select-container-text">Choose from
+                                                        <span class="Info-information" id="ColAmount"></span>
+                                                        measure
+                                                    </p>
+                                                    <div>
+                                                        <div>
+                                                            <div class="col-sm-12 qlikobjectcontainer">
+                                                                <div class="qvobject filter" id="QV04"></div>
+                                                                <!-- <div id="remove-selections-div">
+                                                                    <button type="button" id="btn-QV03" class="btn btn-light-cols">Remove Selections</button>
+                                                                </div>
+                                                                <div id="add-all-tables-div">
+                                                                    <button type="button" id="btn-QV03" class="btn btn-light-cols">Add all possible</button>
+                                                                </div> -->
+                                                                <div class="btn-group btn-group-cols" role="group" aria-label="Basic example">
+                                                                    <button type="button" class="btn btn-light btn-light-cols remove-selections" id="remove-selections-cols">Remove All</button>
+                                                                    <!-- <button type="button" id="add-all-possible-btn" class="btn btn-light btn-light-cols">Add Possible</button> -->
+                                                                      <!-- Trigger the modal with a button -->
+                                                                      <button id="modalbutton1" type="button" class="btn btn-light btn-light-cols remove-selections" data-toggle="modal" data-target="#myModal">
+                                                                            <span><img src="https://findicons.com/files/icons/1676/primo/128/chart_bar.png" height="15px">View</span>
+                                                                          
+                                                                        </button>
+
+                                                                        <!-- Modal -->
+                                                                        <div id="myModal" class="modal fade" role="dialog">
+                                                                        <div class="modal-dialog">
+
+                                                                            <!-- Modal content-->
+                                                                            <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                                <h4 class="modal-title">Distribution Jitter</h4>
+                                                                            </div>
+                                                                            <div class="modal-body" style="height:400px">
+                                                                                <div id="test"  style="height:400px"></div>
+                                                                                  
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                            </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="selections-container selections-container-column">
+                                                    <!-- <div class="qlikobjectcontainer">
+                                                        <div class="Info-headline">
+                                                            <a id="details1">Number of Distinct Values:</a>
+                                                        </div>
+                                                    </div> -->
+                                                    <!-- <div class="qlikobjectcontainer">
+                                                        <div class="Info-information" id="ColAmount"></div>
+                                                    </div> -->
+                                                    <!-- <h4 class="selected-title">Column Selections</h4> -->
+                                                    <div id="measure-selected">
                                                         <!-- column selections will dynamically be added here -->
                                                     </div>
                                                 </div>
