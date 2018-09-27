@@ -680,7 +680,7 @@ $.ajax({
                 // fetch the measureTable array
                 var promise6 = new Promise(function(resolve, reject) {
                     app.getObject(measureTableId).then(model => {                                  
-                        model.getHyperCubeData('/qHyperCubeDef', ).then((data) => {
+                        model.getHyperCubeData('/qHyperCubeDef', fetchParam).then((data) => {
                             measureTableArray = kylinMeasureHandler(data[0].qMatrix)
                             resolve()
                         })  
@@ -727,6 +727,7 @@ $.ajax({
 
                             // join primaryKey and foreignKey clause part
                             primaryKey_Length = primaryKeyJoinArray.length
+                            sql_join_key_part = ''
                             for (let j = 0; j < primaryKey_Length; j++){
                                 // add primaryKey
                                 if(primaryKeyJoinArray[j][0].qText == joinKey){

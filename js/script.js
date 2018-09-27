@@ -24,43 +24,43 @@ define(function () {
         });
     };
 
-    function buildFilterStatement(filterObjs, selectionObj){
-        // Only apply filters for the table in question
-        var filterCount = 0
-        currentFilterString = ""
+    // function buildFilterStatement(filterObjs, selectionObj){
+    //     // Only apply filters for the table in question
+    //     var filterCount = 0
+    //     currentFilterString = ""
 
-        for(filterIndex in filterObjs){
-            if (filterObjs[filterIndex].table == selectionObj.currentTables[0]){
-                if (filterCount === 0){
-                    //Start WHERE CLAUSE
-                    currentFilterString = 'WHERE ';
-                    currentFilterString += filterObjs[filterIndex].column + " " + filterObjs[filterIndex].relationship.trim(); 
-                    if (isNaN(filterObjs[filterIndex].textValue)){
-                        // String entered by user in text box
-                        currentFilterString += " '" + filterObjs[filterIndex].textValue.trim() + "' ";
-                    }
-                    else{
-                        // Number entered by user in text box
-                        currentFilterString += " " + filterObjs[filterIndex].textValue.trim();                            
-                    }
-                    console.log(currentFilterString);
-                } 
-                else {
-                    // continue building on the where clause 
-                    currentFilterString += " " + filterObjs[filterIndex].operator.trim() + " " + filterObjs[filterIndex].column.trim() + " " + filterObjs[filterIndex].relationship.trim();
-                    if (isNaN(filterObjs[filterIndex].textValue)){                            
-                        currentFilterString +=  " '" + filterObjs[filterIndex].textValue.trim() + "' ";
-                    }
-                    else{
-                        currentFilterString +=  " " + filterObjs[filterIndex].textValue.trim() + " ";
-                    }
-                    console.log(currentFilterString);
-                };
-                filterCount++;
-            }
-        }
-        return(currentFilterString)
-    };
+    //     for(filterIndex in filterObjs){
+    //         if (filterObjs[filterIndex].table == selectionObj.currentTables[0]){
+    //             if (filterCount === 0){
+    //                 //Start WHERE CLAUSE
+    //                 currentFilterString = 'WHERE ';
+    //                 currentFilterString += filterObjs[filterIndex].column + " " + filterObjs[filterIndex].relationship.trim(); 
+    //                 if (isNaN(filterObjs[filterIndex].textValue)){
+    //                     // String entered by user in text box
+    //                     currentFilterString += " '" + filterObjs[filterIndex].textValue.trim() + "' ";
+    //                 }
+    //                 else{
+    //                     // Number entered by user in text box
+    //                     currentFilterString += " " + filterObjs[filterIndex].textValue.trim();                            
+    //                 }
+    //                 console.log(currentFilterString);
+    //             } 
+    //             else {
+    //                 // continue building on the where clause 
+    //                 currentFilterString += " " + filterObjs[filterIndex].operator.trim() + " " + filterObjs[filterIndex].column.trim() + " " + filterObjs[filterIndex].relationship.trim();
+    //                 if (isNaN(filterObjs[filterIndex].textValue)){                            
+    //                     currentFilterString +=  " '" + filterObjs[filterIndex].textValue.trim() + "' ";
+    //                 }
+    //                 else{
+    //                     currentFilterString +=  " " + filterObjs[filterIndex].textValue.trim() + " ";
+    //                 }
+    //                 console.log(currentFilterString);
+    //             };
+    //             filterCount++;
+    //         }
+    //     }
+    //     return(currentFilterString)
+    // };
 
     function createScriptObjs(qlikGenericObj, app) {
 
@@ -171,7 +171,7 @@ define(function () {
             for (selectionIndex in selectionObjs) {
                 
                 // build the filter sections for the script
-                var filterString = buildFilterStatement(filterObjs, selectionObjs[selectionIndex])
+                //var filterString = buildFilterStatement(filterObjs, selectionObjs[selectionIndex])
 
                 // [products]:
                 // Load
@@ -222,14 +222,14 @@ define(function () {
                 sqlMesToLoad = sqlMesToLoad.slice(0, -2)
 
                 var qlikGenericObj = {
-                    Load: 
-                    `[${selectionObjs[selectionIndex].currentTables[0]}]:
-                        Load
-                        ${qlikColsToLoad}
-                        SQL SELECT 
-                        ${sqlColsToLoad}
-                        FROM ${selectionObjs[selectionIndex].currentDbs[0]}.${selectionObjs[selectionIndex].currentTables[0]}
-                        ${filterString};`,
+                    // Load: 
+                    // `[${selectionObjs[selectionIndex].currentTables[0]}]:
+                    //     Load
+                    //     ${qlikColsToLoad}
+                    //     SQL SELECT 
+                    //     ${sqlColsToLoad}
+                    //     FROM ${selectionObjs[selectionIndex].currentDbs[0]}.${selectionObjs[selectionIndex].currentTables[0]}
+                    //     ${filterString};`,
                     LoadDD: 
                     `[${selectionObjs[selectionIndex].currentTables[0]}]:
                         DIRECT QUERY
