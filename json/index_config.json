@@ -1,32 +1,22 @@
 {
   "items": [
-	{
-      "path": "qdc-cloudera.html",
-      "color": "color1",
-      "icon": "fa-magic",
-      "picture": "img/data-art.png",
-      "headline": "Cloudera",
-      "launch": "Connect to Hadoop",
-      "description": "<p>OnDemand data aquisition</p><p>based on Hadoop</p>"
+    {
+      "path": "qdc-kyligence-beta.html",
+      "color": "color3",
+      "icon": "fa-star",
+      "picture": "img/kyligence_icon.png",
+      "headline": "Kyligence Enterprise Data Explorer",
+      "launch": "Launch Explorer",
+      "description": "<p>Generate Direct Discovery APP based on Cube</p>"
     },
     {
       "path": "",
       "color": "color3",
       "icon": "fa-star",
-      "picture": "img/QlikLogo-RGB.jpg",
+      "picture": "img/data-art.png",
       "headline": "Your Usecase here",
       "launch": "Start your usecase",
       "description": "<p>insert additional Usecases here</p>"
-    },
-    {
-      "path": "qdc-cloudera-beta.html",
-      "color": "color2",
-      "icon": "fa-bolt",
-      "picture": "img/cde.png",
-      "headline": "Cloudera Data Explorer",
-      "launch": "Launch CDE",
-      "description": "<p>Ad-Hoc data lake browser</p>"
     }
-	
   ]
 }

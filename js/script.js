@@ -98,7 +98,6 @@ define(function () {
                     <tr> 
                         <td class="selcoltable selrowtable"> ${schema} </td> 
                         <td class="selcoltable selrowtable"> ${table} </td> 
-                        <td class="selcoltable selrowtable"> ${dim},${mes}</td> 
                     </tr> 
                 </tbody> 
             </table> 
@@ -111,11 +110,10 @@ define(function () {
                                     <span style="float: right;" class="glyphicon glyphicon-minus"></span> 
                                 </a> 
                             </pre> 
-                            <pre class="scriptcode" id="Placeholderscript${vSelectedTableProp.length - 1}">Show Script 
-                                <a href="#" id="showscript${vSelectedTableProp.length - 1}"> 
-                                    <span style="float: right;" class="glyphicon glyphicon-plus"></span> 
-                                </a> 
-                            </pre></td></tr></tbody></table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         `);
 
         } else {
@@ -125,7 +123,6 @@ define(function () {
                     <tr>
                         <td class="selcoltable selrowtable">  ${schema} </td>
                         <td class="selcoltable selrowtable">  ${table} </td>
-                        <td class="selcoltable selrowtable">  ${column} </td>
                     </tr>
                 </tbody>
             </table>
@@ -136,11 +133,6 @@ define(function () {
                             <pre id="LoadScript${vSelectedTableProp.length - 1}"class="scriptcode">${script}
                                 <a href="#" id="hidescript${vSelectedTableProp.length - 1}">
                                     <span style="float: right;" class="glyphicon glyphicon-minus"></span>
-                                </a>
-                            </pre>
-                            <pre class="scriptcode" id="Placeholderscript${vSelectedTableProp.length - 1}">Show Script
-                                <a href="#" id="showscript${vSelectedTableProp.length - 1}">
-                                    <span style="float: right;" class="glyphicon glyphicon-plus"></span>
                                 </a>
                             </pre>
                         </td>
@@ -284,35 +276,7 @@ define(function () {
             return [vScriptArray, vcycle, vSelectedTableProp]
         },
         generateTreeObj: function(){
-            for (var i = vSelectedTableProp.length - 1; i >= 0; i--) {
-                //Variables for tree structure
-                var columnsArray = [];
-                //var vtablecol = [];
-                var avmes = [];
-                var avdim = [];
-
-
-                //vinfosource.push(vSelectedTableProp[i][1].SCHEMA);
-
-                if (vSelectedTableProp[i][1].DIMENSION != "") {
-                    var dimensionString = vSelectedTableProp[i][1].DIMENSION;
-                    var dimensionArray = dimensionString.split(', ');
-                    columnsArray = columnsArray.concat(dimensionArray);
-                    avdim = avdim.concat(columnsArray);
-
-                    var measureString = vSelectedTableProp[i][1].MEASURE;
-                    var measureArray = measureString.split(', ');
-                    columnsArray = columnsArray.concat(measureArray);
-                    avmes = avmes.concat(columnsArray);
-                } else {
-                    //vinfotable.push(vSelectedTableProp[i][1].TABLE);
-                    var columnString = vSelectedTableProp[i][1].COLUMN;
-                    var columnsArray = columnString.split(', ');
-                    //infoColumns = infoColumns.concat(columnsArray);
-                    //vtablecol = vtablecol.concat(columnsArray);
-                }
-            }
-            return [vSelectedTableProp, columnsArray, avmes, avdim] 
+            return [vSelectedTableProp]
         },
         createFinalScript: function(finalScript, vDataConnection){
             //Create final Script

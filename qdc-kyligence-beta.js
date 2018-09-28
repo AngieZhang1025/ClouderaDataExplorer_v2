@@ -444,12 +444,12 @@ $.ajax({
 
             // Remove DB selections
             $('#remove-selections-dbs').on('click', function () {
-                app.field('db_name').clear();
+                app.field('project').clear();
             });
 
             // Remove table selections
             $('#remove-selections-tables').on('click', function () {
-                app.field('table_name').clear();
+                app.field('cube_name').clear();
             });
 
         //    // Popup Database/Table Row Count
@@ -499,9 +499,9 @@ $.ajax({
                     measureName = measureObj[i][0].qText;
 
                     selectedMeasure = selectedMeasure.map(x=>x.trim());
-                    if(selectedMeasure.indexOf(measureName) == -1) {
-                        continue;
-                    }
+                    // if(selectedMeasure.indexOf(measureName) == -1) {
+                    //     continue;
+                    // }
                     switch (expression) {
                         case "SUM": 
                             newExpression = `=SUM(${paramValue})`
@@ -710,7 +710,7 @@ $.ajax({
                         tableKey_length = 0;
 
                     join_sql = `FROM ${factTableName}` + '\n';
-                    if(typeJoinArray.length !== 0) {
+                    if(typeJoinArray.length !== 0 && primaryKeyJoinArray.length !== 0) {
                         for (let i = 0; i < typeJoinArray.length; i++) {
                             joinKey = typeJoinArray[i][0].qText;
 
@@ -719,7 +719,7 @@ $.ajax({
                             for (let q=0; q < tableKey_length; q++) {
                                 if(tableJoinArray[q][2].qText == joinKey) {
                                     // direct query do not support join as
-                                    sql_join_table_part = ` JOIN  ${tableJoinArray[q][1].qText}` + '\n';
+                                    sql_join_table_part = ` ${typeJoinArray[q][2].qText} JOIN  ${tableJoinArray[q][1].qText}` + '\n';
                                     table_verbose_name = tableJoinArray[q][0].qText;
                                     table_origin_name = tableJoinArray[q][1].qText;
                                 }
@@ -819,16 +819,16 @@ $.ajax({
                 
                 var treeObj = script.generateTreeObj()
                 var vSelectedTableProp = treeObj[0]
-                var columnsArray = treeObj[1]
-                var avmes = treeObj[2]
-                var avdim = treeObj[3]
+                // var columnsArray = treeObj[1]
+                // var avmes = treeObj[2]
+                // var avdim = treeObj[3]
 
                 for (var i = vSelectedTableProp.length - 1; i >= 0; i--) {
                     // ConumberStringuct html list of columns
-                    $.each(columnsArray, function (index, value) {
-                        columnListString += `<li class="tree-leaf">${value}</li>`;
-                    });
-                    console.log('columnListString: ' + columnListString)
+                    // $.each(columnsArray, function (index, value) {
+                    //     columnListString += `<li class="tree-leaf">${value}</li>`;
+                    // });
+                    // console.log('columnListString: ' + columnListString)
 
                     //Append content to table
                     $('#tree-root').after(`
@@ -878,18 +878,10 @@ $.ajax({
                     $(this).parent().children('ul.tree').toggle(200);
                 });
 
-                summaryTableCols.push('table_name')
-                summaryTableCols.push('#Rows')
-                summaryTableCols.push('Size')
-                summaryTableCols.push('Format')
-                summaryTableCols.push('#Files')
-
-                detailTableCols.push('Column')
-                detailTableCols.push('Type')
-                detailTableCols.push('#Nulls')
-                detailTableCols.push('#Distinct Values')
-                detailTableCols.push('Max Size')
-                detailTableCols.push('Avg Size')
+                summaryTableCols.push('project')
+                summaryTableCols.push('cube_name')
+                summaryTableCols.push('cube_status')
+                summaryTableCols.push('owner')
 
                 tableList = []
                 for(selectionIndex in selectionObjs){
@@ -897,7 +889,7 @@ $.ajax({
                 }
 
                 app.clearAll().then(function(){
-                    app.field('table_name').selectValues(tableList).then(function(){
+                    app.field('cube_name').selectValues(tableList).then(function(){
                         app.visualization.create('table', summaryTableCols).then(function (chart) {
                             // parameter is the id of html element to show in
                             chart.show('QVINFO');
@@ -915,76 +907,25 @@ $.ajax({
                         }
                     })
 
-                    if ($(this).hasClass('active-tree-table')) {
-                        // item already selected so unselect and remove
-                        $(this).removeClass('active-tree-table')
+                    $(this).removeClass('active-tree-table')
 
-                        $('#KPI1').hide()    
-                        $('#KPI2').hide()                                    
-                        $('#KPI3').hide()                                    
-                        $('#KPI4').hide()  
+                    $('#KPI1').hide()    
+                    $('#KPI2').hide()                                    
+                    $('#KPI3').hide()                                    
+                    $('#KPI4').hide()  
 
-                        $("#summary-title").text("Table Summary")
+                    $("#summary-title").text("Table Summary")
 
-                        //show summary table again
-                        app.clearAll().then(function(){
-                            app.field('table_name').selectValues(tableList).then(function(){
-                                app.visualization.create('table', summaryTableCols).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('QVINFO');
-                                    qlik.resize();
-                                });
+                    //show summary table again
+                    app.clearAll().then(function(){
+                        app.field('cube_name').selectValues(tableList).then(function(){
+                            app.visualization.create('table', summaryTableCols).then(function (chart) {
+                                // parameter is the id of html element to show in
+                                chart.show('QVINFO');
+                                qlik.resize();
                             });
                         });
-                    }
-                    else {
-                        selectedTable = []
-                        // item is not selected so select and add
-                        $(this).addClass('active-tree-table')
-                        selectedTable.push($(this).text().trim())  
-                        
-                        $("#summary-title").text("Table Details")
-
-                        // generate detailed table
-                        app.clearAll().then(function(){
-                            app.field('table_name').selectValues(selectedTable).then(function(){
-                                app.visualization.create('table', detailTableCols).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('QVINFO');                                  
-                                    qlik.resize();
-                                }); 
-                                var rowsKpiObj = [{"qDef" : { "qDef" : "=Only([#Rows])", "qLabel" : "Number of Rows"}}]
-                                var sizeKpiObj = [{"qDef" : { "qDef" : "=Only([Size])", "qLabel" : "Size"}}]
-                                var formatKpiObj = [{"qDef" : { "qDef" : "=Only([Format ])", "qLabel" : "Format"}}]
-                                var filesKpiObj = [{"qDef" : { "qDef" : "=Only([#Files])", "qLabel" : "Number of Files"}}]
-                                
-                                app.visualization.create('kpi', rowsKpiObj, {fontSize:"S"}).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('KPI1');
-                                    $('#KPI1').show()
-                                    qlik.resize();
-                                }); 
-                                app.visualization.create('kpi', sizeKpiObj, {"fontSize":"S"}).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('KPI2');
-                                    $('#KPI2').show()
-                                    qlik.resize();
-                                });  
-                                app.visualization.create('kpi', formatKpiObj, {"fontSize":"S"}).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('KPI3');
-                                    $('#KPI3').show()
-                                    qlik.resize();
-                                });  
-                                app.visualization.create('kpi', filesKpiObj, {"fontSize":"S"}).then(function (chart) {
-                                    // parameter is the id of html element to show in
-                                    chart.show('KPI4');
-                                    $('#KPI4').show()
-                                    qlik.resize();
-                                });  
-                            });
-                        });
-                    }
+                    });
                 });
 
             });
@@ -1045,13 +986,13 @@ $.ajax({
 
                                 if(measureTableArray.length!==0) {
                                     for(var i=0; i<measureTableArray.length;i++) {
-                                        new_app.createMeasure(measureTableArray[i]).then(function(reply) { 
-                                            $.notify({ icon: 'glyphicon glyphicon-ok', message: 'measure pre-create successfully.' }, { type: 'success', placement: { from: 'bottom', align: 'right' } });  
+                                        new_app.createMeasure(measureTableArray[i]).then(function(reply) {   
                                             console.log(reply);                                  
                                         }, function(error) {  
                                             console.log("error: " + error.stack);
                                         }); 
                                     }
+                                    //$.notify({ icon: 'glyphicon glyphicon-ok', message: 'measure pre-create successfully.' }, { type: 'success', placement: { from: 'bottom', align: 'right' } });
                                 }
                                 
                                 console.log('Reload:');

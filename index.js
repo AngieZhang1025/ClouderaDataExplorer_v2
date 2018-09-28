@@ -47,7 +47,7 @@ $.ajax({
 
     var config = {
         host: window.location.hostname,
-        prefix: "/ticket/",
+        prefix: "/",
         port: window.location.port,
         isSecure: window.location.protocol === "https:"
     };
@@ -58,13 +58,13 @@ $.ajax({
     });
 
     require([
-        "../js/qlik",
-        "/js/jquery",
-        "/js/bootstrap.min",
-        "/js/bootstrap-select.min",
-        "/js/bootstrap-notify.min",
-        "/js/jquery.cookie",
-        "/js/bootstrap-switch.min"
+        "js/qlik",
+        "jquery",
+        applicationfolder + "/js/bootstrap.min",
+        applicationfolder + "/js/bootstrap-select",
+        applicationfolder + "/js/bootstrap-notify.min",
+        applicationfolder + "/js/jquery.cookie",
+        applicationfolder + "/js/bootstrap-switch.min",
     ],
 
     function (qlik, $) {
