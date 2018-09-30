@@ -4,7 +4,7 @@
       "path": "qdc-kyligence.html",
       "color": "color3",
       "icon": "fa-star",
-      "picture": "img/kyligence_icon.png",
+      "picture": "img/icon_kyligence.png",
       "headline": "Kyligence Enterprise Data Explorer",
       "launch": "Launch Explorer",
       "description": "<p>Generate Direct Discovery APP based on Cube</p>"
