@@ -1,10 +1,10 @@
 {
 	"config":{
 		"general":{
-			"folder":"DataConciergev21",
+			"folder":"DataConciergeKyligence",
 			"connect":"https://kyligence-pc/sense/app/"
 		},	
-		"cloudera":{
+		"kyligence":{
 			"app_name": "KE_METADATA_LOADER.qvf",
 			"scenario": "Kyligence Data Explorer",			
 			"appid":"187ddb94-2269-458f-87b9-3b1316c3a48e",

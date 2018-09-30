@@ -11,10 +11,10 @@ $.ajax({
     success: function (data) {
         ;
         content = data;
-        applicationid = content.config.cloudera.appid;
+        applicationid = content.config.kyligence.appid;
         applicationfolder = content.config.general.folder;
         vsiteurl = content.config.general.connect;
-        vNamespace = content.config.cloudera.namespace;
+        vNamespace = content.config.kyligence.namespace;
     }, error: function (jqXHR, textStatus, errorThrown) {
         console.log(textStatus, errorThrown);
     }
